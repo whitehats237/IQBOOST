@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IQBOOST — Quiz</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav class="nav">
+    <div class="logo">IQ<span>BOOST</span></div>
+    <a href="matiere.html" class="nav-retour">← Changer de matière</a>
+  </nav>
+
+  <!-- ─────────────────────────────────── -->
+  <!-- ZONE DE CHARGEMENT (visible au début) -->
+  <!-- ─────────────────────────────────── -->
+  <div id="zone-chargement" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; gap: 1.5rem;">
+    <div class="spinner"></div>
+    <p class="texte-chargement">L'IA génère vos questions personnalisées…</p>
+    <p class="texte-chargement-sub">Cela peut prendre quelques secondes</p>
+  </div>
+
+  <!-- ─────────────────────────────────── -->
+  <!-- ZONE D'ERREUR (cachée par défaut)  -->
+  <!-- ─────────────────────────────────── -->
+  <div id="zone-erreur" style="display: none; text-align: center; padding: 3rem;">
+    <p>❌ Impossible de charger les questions. Vérifie ta connexion internet.</p>
+    <button onclick="window.location.reload()">Réessayer</button>
+  </div>
+
+  <!-- ─────────────────────────────────── -->
+  <!-- ZONE QUIZ (cachée pendant chargement) -->
+  <!-- ─────────────────────────────────── -->
+  <div id="zone-quiz" style="display: none;">
+
+    <!-- BARRE DE PROGRESSION EN HAUT -->
+    <div class="barre-progression-conteneur">
+      <div class="barre-progression" id="barre-progression" style="width: 0%"></div>
+    </div>
+
+    <main class="page-quiz">
+
+      <!-- COMPTEUR (Question 1 / 10) -->
+      <div class="quiz-compteur" id="compteur">Question 1 / 10</div>
+
+      <!-- TEXTE DE LA QUESTION -->
+      <div class="quiz-question" id="texte-question">
+        <!-- Le texte est injecté par quiz.js -->
+      </div>
+
+      <!-- LES 4 CHOIX -->
+      <!-- 
+        COUSIN : c'est ici que tu vas styliser les boutons.
+        Ils ont 3 états possibles :
+          - .btn-choix         → style normal (gris/blanc)
+          - .btn-choix.correct → fond vert (bonne réponse)
+          - .btn-choix.incorrect → fond rouge (mauvaise réponse)
+      -->
+      <div class="quiz-choix">
+        <button class="btn-choix" id="choix-A" onclick="choisirReponse('A')">A. </button>
+        <button class="btn-choix" id="choix-B" onclick="choisirReponse('B')">B. </button>
+        <button class="btn-choix" id="choix-C" onclick="choisirReponse('C')">C. </button>
+        <button class="btn-choix" id="choix-D" onclick="choisirReponse('D')">D. </button>
+      </div>
+
+      <!-- EXPLICATION (cachée, apparaît après la réponse) -->
+      <div class="quiz-explication" id="explication" style="display: none;">
+        <div class="explication-titre">💡 Explication</div>
+        <p id="texte-explication"></p>
+      </div>
+
+      <!-- BOUTON SUIVANT (caché, apparaît après la réponse) -->
+      <button class="btn-suivant" id="btn-suivant" onclick="questionSuivante()" style="display: none;">
+        Question suivante →
+      </button>
+
+    </main>
+
+  </div>
+
+  <!-- Les scripts (toujours à la fin) -->
+  <script src="config.js"></script>
+  <script src="gemini.js"></script>
+  <script src="quiz.js"></script>
+
+</body>
+</html>

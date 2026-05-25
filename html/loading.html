@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CogniTrack — Génération en cours...</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- PAGE DE CHARGEMENT -->
+  <main class="page-loading">
+
+    <!-- Animation de l'IA qui travaille -->
+    <div class="loading-animation">
+      <div class="loading-cercle"></div>
+      <div class="loading-cercle"></div>
+      <div class="loading-cercle"></div>
+    </div>
+
+    <!-- Texte principal -->
+    <h2 class="loading-titre">L'IA génère vos questions...</h2>
+    <p class="loading-sous-titre" id="loading-message">
+      Analyse de la matière en cours
+    </p>
+
+    <!-- Infos sur ce qu'on prépare -->
+    <div class="loading-infos">
+      <div class="loading-info-item">
+        <span class="loading-info-icone">🎯</span>
+        <span id="info-matiere">Chargement...</span>
+      </div>
+      <div class="loading-info-item">
+        <span class="loading-info-icone">📊</span>
+        <span id="info-niveau">Chargement...</span>
+      </div>
+      <div class="loading-info-item">
+        <span class="loading-info-icone">❓</span>
+        <span>10 questions adaptées à ton niveau</span>
+      </div>
+    </div>
+
+    <!-- Message d'erreur (caché par défaut) -->
+    <div class="loading-erreur" id="zone-erreur" style="display:none">
+      <p>❌ <span id="texte-erreur">Une erreur est survenue.</span></p>
+      <button class="btn-principal" onclick="window.location.href='matiere.html'">
+        ← Réessayer
+      </button>
+    </div>
+
+  </main>
+
+  <script src="config.js"></script>
+  <script src="gemini.js"></script>
+  <script>
+    // ─── On récupère les choix de l'étudiant ───
+    const matiere = localStorage.getItem("matiere_choisie");
+    const niveau  = localStorage.getItem("niveau_choisi");
+    const prenom  = localStorage.getItem("etudiant_prenom");
+
+    // Si les données manquent, on retourne au début
+    if (!matiere || !niveau) {
+      window.location.href = "index.html";
+    }
+
+    // On affiche les infos
+    document.getElementById("info-matiere").textContent = "Matière : " + matiere;
+    document.getElementById("info-niveau").textContent  = "Niveau : " + niveau;
+
+    // ─── Messages qui changent pendant le chargement ───
+    const messages = [
+      "Analyse de la matière en cours...",
+      "Création des questions adaptées...",
+      "Vérification de la difficulté...",
+      "Finalisation du quiz...",
+    ];
+    let indexMessage = 0;
+    const intervalMessages = setInterval(() => {
+      indexMessage = (indexMessage + 1) % messages.length;
+      document.getElementById("loading-message").textContent = messages[indexMessage];
+    }, 1500);
+
+    // ─── On appelle Gemini pour générer les questions ───
+    async function genererEtRediriger() {
+      try {
+        // Appel à gemini.js
+        const questions = await genererQuestions(matiere, niveau, CONFIG.NB_QUESTIONS);
+
+        // On arrête l'animation des messages
+        clearInterval(intervalMessages);
+
+        // On sauvegarde les questions pour la page quiz
+        localStorage.setItem("questions_quiz", JSON.stringify(questions));
+        localStorage.setItem("quiz_matiere", matiere);
+        localStorage.setItem("quiz_niveau", niveau);
+        localStorage.setItem("quiz_index", "0");         // question actuelle
+        localStorage.setItem("quiz_score", "0");          // score actuel
+        localStorage.setItem("quiz_temps_total", "0");    // temps cumulé
+        localStorage.setItem("quiz_mauvaises", "[]");     // notions ratées
+
+        // On redirige vers la page quiz
+        window.location.href = "quiz.html";
+
+      } catch (erreur) {
+        // En cas d'erreur on affiche un message clair
+        clearInterval(intervalMessages);
+        document.getElementById("zone-erreur").style.display = "block";
+        document.getElementById("texte-erreur").textContent =
+          "Impossible de contacter l'IA. Vérifie ta connexion internet ou ta clé API. (" + erreur.message + ")";
+      }
+    }
+
+    // On lance la génération
+    genererEtRediriger();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CogniTrack — Évaluation cognitive</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav class="nav">
+    <div class="logo">Cogni<span>Track</span></div>
+  </nav>
+
+  <!-- PAGE ACCUEIL -->
+  <main class="page-accueil">
+
+    <!-- Titre principal -->
+    <div class="hero">
+      <div class="hero-tag">✦ Plateforme d'évaluation cognitive</div>
+      <h1 class="hero-titre">
+        Mesure ton<br>
+        <span class="gradient-text">niveau réel</span><br>
+        en quelques minutes
+      </h1>
+      <p class="hero-sous-titre">
+        Des tests adaptatifs générés par l'IA pour analyser ta compréhension,
+        mesurer ta progression et créer ton programme d'étude personnalisé.
+      </p>
+    </div>
+
+    <!-- Formulaire de démarrage -->
+    <div class="formulaire">
+      <div class="champ">
+        <label class="champ-label" for="prenom">Ton prénom</label>
+        <input
+          class="champ-input"
+          type="text"
+          id="prenom"
+          placeholder="Ex : Ahmed"
+        >
+      </div>
+      <!-- Ce bouton redirige vers la page de choix de matière -->
+      <button class="btn-principal" onclick="allerVersMatiere()">
+        Commencer l'évaluation →
+      </button>
+    </div>
+
+    <!-- Statistiques en bas -->
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-nombre">10<span>+</span></div>
+        <div class="stat-texte">Matières disponibles</div>
+      </div>
+      <div class="stat">
+        <div class="stat-nombre"><span>∞</span></div>
+        <div class="stat-texte">Questions générées par IA</div>
+      </div>
+      <div class="stat">
+        <div class="stat-nombre">4</div>
+        <div class="stat-texte">Niveaux de performance</div>
+      </div>
+      <div class="stat">
+        <div class="stat-nombre">100<span>%</span></div>
+        <div class="stat-texte">Personnalisé pour toi</div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="config.js"></script>
+  <script>
+    function allerVersMatiere() {
+      const prenom = document.getElementById("prenom").value.trim();
+
+      // Vérification : le prénom ne doit pas être vide
+      if (!prenom) {
+        alert("Entre ton prénom pour commencer !");
+        return;
+      }
+
+      // On sauvegarde le prénom pour l'utiliser dans les autres pages
+      localStorage.setItem("etudiant_prenom", prenom);
+
+      // On va vers la page de choix de matière
+      window.location.href = "matiere.html";
+    }
+  </script>
+
+</body>
+</html>

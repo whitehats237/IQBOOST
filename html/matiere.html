@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CogniTrack — Choisir une matière</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav class="nav">
+    <div class="logo">IQ<span>BOOST</span></div>
+    <a href="index.html" class="nav-retour">← Retour</a>
+  </nav>
+
+  <!-- PAGE CHOIX MATIÈRE -->
+  <main class="page-matiere">
+
+    <div class="section-entete">
+      <h2 class="section-titre">Choisir une matière</h2>
+      <p class="section-sous-titre">
+        Sélectionne la matière que tu veux évaluer. L'IA va générer les questions automatiquement.
+      </p>
+    </div>
+
+    <!-- Grille des matières -->
+    <div class="grille-matieres">
+
+      <div class="carte-matiere" data-matiere="Mathématiques" onclick="selectionnerMatiere(this)">
+        <span class="carte-icone">🧮</span>
+        <div class="carte-nom">Mathématiques</div>
+        <div class="carte-desc">Algèbre, analyse, probabilités, géométrie</div>
+        <div class="carte-note">Questions générées par IA</div>
+      </div>
+
+      <div class="carte-matiere" data-matiere="Réseaux" onclick="selectionnerMatiere(this)">
+        <span class="carte-icone">🌐</span>
+        <div class="carte-nom">Réseaux</div>
+        <div class="carte-desc">TCP/IP, protocoles, architecture réseau</div>
+        <div class="carte-note">Questions générées par IA</div>
+      </div>
+
+      <div class="carte-matiere" data-matiere="Programmation" onclick="selectionnerMatiere(this)">
+        <span class="carte-icone">💻</span>
+        <div class="carte-nom">Programmation</div>
+        <div class="carte-desc">Algorithmique, structures de données, POO</div>
+        <div class="carte-note">Questions générées par IA</div>
+      </div>
+
+      <div class="carte-matiere" data-matiere="Systèmes" onclick="selectionnerMatiere(this)">
+        <span class="carte-icone">📡</span>
+        <div class="carte-nom">Systèmes</div>
+        <div class="carte-desc">OS, processus, gestion mémoire, Linux</div>
+        <div class="carte-note">Questions générées par IA</div>
+      </div>
+
+      <div class="carte-matiere" data-matiere="Base de données" onclick="selectionnerMatiere(this)">
+        <span class="carte-icone">🗄️</span>
+        <div class="carte-nom">Base de données</div>
+        <div class="carte-desc">SQL, modélisation, normalisation, requêtes</div>
+        <div class="carte-note">Questions générées par IA</div>
+      </div>
+
+      <div class="carte-matiere" data-matiere="Culture générale" onclick="selectionnerMatiere(this)">
+        <span class="carte-icone">📚</span>
+        <div class="carte-nom">Culture générale</div>
+        <div class="carte-desc">Histoire, géographie, sciences, actualités</div>
+        <div class="carte-note">Questions générées par IA</div>
+      </div>
+
+    </div>
+
+    <!-- Sélecteur de niveau -->
+    <div class="selecteur-niveau">
+      <div class="niveau-titre">Niveau de difficulté</div>
+      <div class="niveaux">
+        <button class="btn-niveau" onclick="selectionnerNiveau(this)">Débutant</button>
+        <button class="btn-niveau actif" onclick="selectionnerNiveau(this)">Intermédiaire</button>
+        <button class="btn-niveau" onclick="selectionnerNiveau(this)">Avancé</button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- BARRE DU BAS : affiche la sélection + bouton démarrer -->
+  <div class="barre-bas">
+    <div class="barre-info">
+      Matière : <strong id="affichage-matiere">Aucune sélectionnée</strong>
+      · Niveau : <strong id="affichage-niveau">Intermédiaire</strong>
+    </div>
+    <button class="btn-lancer" onclick="lancerLeTest()">
+      Lancer le test ✦
+    </button>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    // Variables pour stocker ce que l'étudiant a choisi
+    let matiereChoisie = "";
+    let niveauChoisi = "Intermédiaire";
+
+    // Quand on clique sur une carte de matière
+    function selectionnerMatiere(carte) {
+      // On enlève la sélection sur toutes les cartes
+      document.querySelectorAll(".carte-matiere").forEach(c => c.classList.remove("selectionnee"));
+
+      // On sélectionne la carte cliquée
+      carte.classList.add("selectionnee");
+
+      // On sauvegarde la matière choisie
+      matiereChoisie = carte.getAttribute("data-matiere");
+
+      // On met à jour l'affichage dans la barre du bas
+      document.getElementById("affichage-matiere").textContent = matiereChoisie;
+    }
+
+    // Quand on clique sur un niveau
+    function selectionnerNiveau(bouton) {
+      // On enlève "actif" sur tous les boutons
+      document.querySelectorAll(".btn-niveau").forEach(b => b.classList.remove("actif"));
+
+      // On active le bouton cliqué
+      bouton.classList.add("actif");
+
+      // On sauvegarde le niveau
+      niveauChoisi = bouton.textContent;
+
+      // On met à jour l'affichage
+      document.getElementById("affichage-niveau").textContent = niveauChoisi;
+    }
+
+    // Quand on clique sur "Lancer le test"
+    function lancerLeTest() {
+      if (!matiereChoisie) {
+        alert("Choisis une matière avant de continuer !");
+        return;
+      }
+
+      // On sauvegarde les choix pour la page loading
+      localStorage.setItem("matiere_choisie", matiereChoisie);
+      localStorage.setItem("niveau_choisi", niveauChoisi);
+
+      // On va vers l'écran de chargement
+      window.location.href = "loading.html";
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>CogniTrack — Test Jour 2</title>
+  <style>
+    body { font-family: monospace; background: #0A0E1A; color: #4F8EF7; padding: 40px; }
+    h1 { color: #E8EDF8; margin-bottom: 8px; }
+    p { color: #8A96B5; margin-bottom: 24px; }
+    .instruction { background: #1A2240; border: 1px solid #2DD4A0; border-radius: 8px; padding: 16px; color: #2DD4A0; }
+  </style>
+</head>
+<body>
+  <h1>CogniTrack — Test Jour 2</h1>
+  <p>Ouvre la console (F12) pour voir les résultats des tests Gemini.</p>
+  <div class="instruction">
+    ✅ Étape 1 : Ouvre config.js et remplace METS_TA_CLE_ICI par ta vraie clé Gemini<br><br>
+    ✅ Étape 2 : Ouvre ce fichier dans ton navigateur (double-clic sur test.html)<br><br>
+    ✅ Étape 3 : Appuie sur F12 → onglet "Console"<br><br>
+    ✅ Étape 4 : Les 3 tests se lancent automatiquement. Si tu vois ✅ partout, c'est bon !
+  </div>
+
+  <!-- L'ordre est IMPORTANT : config.js en premier, puis gemini.js, puis test.js -->
+  <script src="config.js"></script>
+  <script src="gemini.js"></script>
+  <script src="test.js"></script>
+</body>
+</html>
