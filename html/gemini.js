@@ -6,6 +6,10 @@
 // FONCTION PRINCIPALE : Envoyer un message à Groq
 // ─────────────────────────────────────────────
 async function appelGemini(prompt) {
+   if (!prompt || prompt.trim() === "") {
+    throw new Error("Le prompt est vide — vérifie que matiere et niveau sont bien dans localStorage");
+  }
+
   try {
     const reponse = await fetch(CONFIG.GROQ_URL, {
       method: "POST",
@@ -40,46 +44,32 @@ async function appelGemini(prompt) {
 // FONCTION : Générer des questions pour un quiz
 // ─────────────────────────────────────────────
 async function genererQuestions(matiere, niveau, nombre = CONFIG.NB_QUESTIONS) {
-  const prompt = `
-Tu es un professeur expert en ${matiere}.
-Génère exactement ${nombre} questions QCM pour un étudiant de niveau ${niveau}.
-
-RÈGLES IMPORTANTES :
-- Réponds UNIQUEMENT avec du JSON valide, rien d'autre
-- Pas de texte avant, pas de texte après
-- Pas de balises markdown, pas de \`\`\`json
-- Juste le tableau JSON directement
-
-FORMAT EXACT à respecter :
-[
-  {
-    "question": "Texte de la question ?",
-    "choix": {
-      "A": "Premier choix",
-      "B": "Deuxième choix",
-      "C": "Troisième choix",
-      "D": "Quatrième choix"
-    },
-    "bonne_reponse": "B",
-    "explication": "Courte explication pourquoi c'est B"
-  }
-]
-
-Matière : ${matiere}
-Niveau : ${niveau}
-Nombre de questions : ${nombre}
-`;
+  // ... ton prompt existant ...
 
   const texte = await appelGemini(prompt);
+  const texteNettoye = texte.replace(/```json/g, "").replace(/```/g, "").trim();
+  const questions = JSON.parse(texteNettoye);
 
-  const texteNettoye = texte
-    .replace(/```json/g, "")
-    .replace(/```/g, "")
-    .trim();
+  // ✅ AJOUTE CES LIGNES — normalise chaque question
+  return questions.map(q => {
+    // Normalise les clés des choix en majuscule
+    const choixNormalise = {};
+    for (const cle in q.choix) {
+      choixNormalise[cle.toUpperCase()] = q.choix[cle];
+    }
 
-  return JSON.parse(texteNettoye);
+    // Normalise la bonne réponse → garde seulement la lettre en majuscule
+    let bonne = q.bonne_reponse || "";
+    bonne = bonne.trim().toUpperCase().charAt(0); // "a. blabla" → "A"
+
+    return {
+      question:      q.question,
+      choix:         choixNormalise,
+      bonne_reponse: bonne,
+      explication:   q.explication || ""
+    };
+  });
 }
-
 
 // ─────────────────────────────────────────────
 // FONCTION : Générer un programme d'étude
