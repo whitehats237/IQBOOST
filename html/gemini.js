@@ -44,24 +44,49 @@ async function appelGemini(prompt) {
 // FONCTION : Générer des questions pour un quiz
 // ─────────────────────────────────────────────
 async function genererQuestions(matiere, niveau, nombre = CONFIG.NB_QUESTIONS) {
-  // ... ton prompt existant ...
+  
+  // LE VRAI PROMPT
+  const prompt = `
+Tu es un professeur expert en ${matiere}.
+Génère exactement ${nombre} questions QCM pour un étudiant de niveau ${niveau}.
+
+RÈGLES IMPORTANTES :
+- Réponds UNIQUEMENT avec du JSON valide, rien d'autre
+- Pas de texte avant, pas de texte après
+- Pas de balises markdown, pas de \`\`\`json
+- Juste le tableau JSON directement
+
+FORMAT EXACT à respecter :
+[
+  {
+    "question": "Texte de la question ?",
+    "choix": {
+      "A": "Premier choix",
+      "B": "Deuxième choix",
+      "C": "Troisième choix",
+      "D": "Quatrième choix"
+    },
+    "bonne_reponse": "B",
+    "explication": "Courte explication pourquoi c'est B"
+  }
+]
+
+Matière : ${matiere}
+Niveau : ${niveau}
+Nombre de questions : ${nombre}
+`;
 
   const texte = await appelGemini(prompt);
   const texteNettoye = texte.replace(/```json/g, "").replace(/```/g, "").trim();
   const questions = JSON.parse(texteNettoye);
 
-  // ✅ AJOUTE CES LIGNES — normalise chaque question
   return questions.map(q => {
-    // Normalise les clés des choix en majuscule
     const choixNormalise = {};
     for (const cle in q.choix) {
       choixNormalise[cle.toUpperCase()] = q.choix[cle];
     }
-
-    // Normalise la bonne réponse → garde seulement la lettre en majuscule
     let bonne = q.bonne_reponse || "";
-    bonne = bonne.trim().toUpperCase().charAt(0); // "a. blabla" → "A"
-
+    bonne = bonne.trim().toUpperCase().charAt(0);
     return {
       question:      q.question,
       choix:         choixNormalise,
@@ -70,7 +95,6 @@ async function genererQuestions(matiere, niveau, nombre = CONFIG.NB_QUESTIONS) {
     };
   });
 }
-
 // ─────────────────────────────────────────────
 // FONCTION : Générer un programme d'étude
 // ─────────────────────────────────────────────

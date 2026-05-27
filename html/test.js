@@ -37,7 +37,7 @@ async function test2_genererQuestions() {
   console.log("═══════════════════════════════");
 
   try {
-    console.log("⏳ Demande à Gemini de générer 3 questions de maths...");
+    console.log("⏳ Demande à Groq de générer 3 questions de maths...");
 
     // On génère seulement 3 questions pour le test (plus rapide)
     const questions = await genererQuestions("Mathématiques", "Intermédiaire", 3);
