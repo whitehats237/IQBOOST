@@ -102,7 +102,7 @@ async function test3_genererProgramme() {
 // LANCER TOUS LES TESTS
 // ─────────────────────────────────────────────
 async function lancerTousLesTests() {
-  console.log("🚀 DÉMARRAGE DES TESTS — CogniTrack Jour 2");
+  console.log("🚀 DÉMARRAGE DES TESTS — IQBOOST Jour 2");
   console.log("Vérifie ta clé API dans config.js avant de continuer.\n");
 
   await test1_connexionDeBase();

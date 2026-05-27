@@ -1,41 +1,40 @@
 // ============================================
-// quiz.js — Logique du quiz (Jour 3)
+// quiz.js — Jour 4 : avec minuterie
 // ============================================
-// Ce fichier gère :
-//   1. Charger les questions depuis Groq
-//   2. Afficher les questions une par une
-//   3. Gérer les réponses et calculer le score
 
 // ─────────────────────────────────────────────
 // VARIABLES GLOBALES
 // ─────────────────────────────────────────────
-let questions = [];         // tableau de toutes les questions
-let indexQuestion = 0;      // quelle question on affiche (0 = première)
-let score = 0;              // nombre de bonnes réponses
-let reponsesDetaillees = []; // pour la page résultats
+let questions        = [];
+let indexQuestion    = 0;
+let score            = 0;
+let reponsesDetaillees = [];
 
-// On récupère ce que l'étudiant a choisi dans matiere.html
+// Minuterie
+let tempsRestant     = 0;
+let intervalTimer    = null;
+let tempsDebutQuestion = 0; // pour mesurer la rapidité
+
+const DUREE_QUESTION = CONFIG.TIMER_DUREE; // 20 secondes
+
 const matiere = localStorage.getItem("matiere_choisie") || "Mathématiques";
 const niveau  = localStorage.getItem("niveau_choisi")  || "Intermédiaire";
 
+console.log("Matière lue :", matiere, "| Niveau lu :", niveau);
+
 
 // ─────────────────────────────────────────────
-// ÉTAPE 1 : Charger les questions au démarrage
+// ÉTAPE 1 : Charger les questions
 // ─────────────────────────────────────────────
 async function chargerQuestions() {
   try {
     afficherChargement(true);
-
-    // On demande 10 questions à Groq
     questions = await genererQuestions(matiere, niveau, CONFIG.NB_QUESTIONS);
-
     afficherChargement(false);
-
-    // On affiche la première question
     afficherQuestion();
-
   } catch (erreur) {
     console.error("Erreur chargement questions :", erreur);
+    afficherChargement(false);
     document.getElementById("zone-erreur").style.display = "block";
   }
 }
@@ -47,70 +46,103 @@ async function chargerQuestions() {
 function afficherQuestion() {
   const q = questions[indexQuestion];
 
-  // Met à jour la barre de progression en haut
-  const progression = ((indexQuestion) / questions.length) * 100;
+  // Barre de progression
+  const progression = (indexQuestion / questions.length) * 100;
   document.getElementById("barre-progression").style.width = progression + "%";
   document.getElementById("compteur").textContent =
     `Question ${indexQuestion + 1} / ${questions.length}`;
 
-  // Affiche le texte de la question
+  // Texte et choix
   document.getElementById("texte-question").textContent = q.question;
-
-  // Affiche les 4 choix (A, B, C, D)
-  const lettres = ["A", "B", "C", "D"];
-  lettres.forEach(lettre => {
+  ["A", "B", "C", "D"].forEach(lettre => {
     const bouton = document.getElementById("choix-" + lettre);
     bouton.textContent = lettre + ". " + q.choix[lettre];
-    bouton.className = "btn-choix"; // remet le style normal
-    bouton.disabled = false;        // réactive le bouton
+    bouton.className = "btn-choix";
+    bouton.disabled = false;
   });
 
-  // Cache le bouton "Suivant" au début
   document.getElementById("btn-suivant").style.display = "none";
-  document.getElementById("explication").style.display  = "none";
+  document.getElementById("explication").style.display = "none";
+
+  // Lance la minuterie
+  demarrerTimer();
 }
 
 
 // ─────────────────────────────────────────────
-// ÉTAPE 3 : Gérer le clic sur un choix
+// MINUTERIE
 // ─────────────────────────────────────────────
-function choisirReponse(lettre) {
-  const q = questions[indexQuestion];
-  const bonneReponse = q.bonne_reponse;
-  const estCorrect = (lettre === bonneReponse);
+function demarrerTimer() {
+  // Remet à zéro si un timer tourne déjà
+  arreterTimer();
 
-  // On désactive tous les boutons (plus de clic possible)
+  tempsRestant = DUREE_QUESTION;
+  tempsDebutQuestion = Date.now();
+
+  mettreAJourAffichageTimer();
+
+  intervalTimer = setInterval(() => {
+    tempsRestant--;
+    mettreAJourAffichageTimer();
+
+    if (tempsRestant <= 0) {
+      arreterTimer();
+      tempsEcoule(); // temps dépassé
+    }
+  }, 1000);
+}
+
+function arreterTimer() {
+  if (intervalTimer) {
+    clearInterval(intervalTimer);
+    intervalTimer = null;
+  }
+}
+
+function mettreAJourAffichageTimer() {
+  const el = document.getElementById("timer-texte");
+  const barre = document.getElementById("timer-barre");
+
+  if (el) el.textContent = tempsRestant + "s";
+
+  // Barre qui se vide de gauche à droite
+  const pourcentage = (tempsRestant / DUREE_QUESTION) * 100;
+  if (barre) {
+    barre.style.width = pourcentage + "%";
+    // Change couleur selon le temps restant
+    if (tempsRestant <= 5)       barre.style.background = "#ef4444"; // rouge
+    else if (tempsRestant <= 10) barre.style.background = "#f59e0b"; // orange
+    else                         barre.style.background = "#6366f1"; // violet
+  }
+}
+
+function tempsEcoule() {
+  // Compte comme une mauvaise réponse
+  const q = questions[indexQuestion];
+  const bonneReponse = (q.bonne_reponse || "").trim().toUpperCase();
+
+  // Désactive tous les boutons
   ["A", "B", "C", "D"].forEach(l => {
     document.getElementById("choix-" + l).disabled = true;
   });
 
-  // On colore vert si correct, rouge si incorrect
-  document.getElementById("choix-" + lettre).classList.add(
-    estCorrect ? "correct" : "incorrect"
-  );
+  // Montre la bonne réponse en vert
+  document.getElementById("choix-" + bonneReponse).classList.add("correct");
 
-  // Si mauvaise réponse, on montre aussi la bonne en vert
-  if (!estCorrect) {
-    document.getElementById("choix-" + bonneReponse).classList.add("correct");
-  }
-
-  // On met à jour le score
-  if (estCorrect) score++;
-
-  // On sauvegarde pour la page résultats
+  // Sauvegarde comme raté (temps = 0)
   reponsesDetaillees.push({
     question:      q.question,
-    repondu:       lettre,
+    repondu:       "—",
     bonne_reponse: bonneReponse,
-    correct:       estCorrect,
-    explication:   q.explication
+    correct:       false,
+    explication:   q.explication,
+    temps:         DUREE_QUESTION // temps max = pas répondu
   });
 
-  // On affiche l'explication
-  document.getElementById("texte-explication").textContent = q.explication;
+  document.getElementById("texte-explication").textContent =
+    "⏱️ Temps écoulé ! " + q.explication;
   document.getElementById("explication").style.display = "block";
 
-  // On affiche le bouton "Suivant" (ou "Voir les résultats" si c'est la dernière)
   const btnSuivant = document.getElementById("btn-suivant");
   btnSuivant.style.display = "block";
   btnSuivant.textContent =
@@ -119,75 +151,124 @@ function choisirReponse(lettre) {
 
 
 // ─────────────────────────────────────────────
-// ÉTAPE 4 : Passer à la question suivante
+// ÉTAPE 3 : Gérer le clic sur un choix
+// ─────────────────────────────────────────────
+function choisirReponse(lettre) {
+  arreterTimer();
+
+  const tempsReponse = Math.round((Date.now() - tempsDebutQuestion) / 1000);
+
+  const q = questions[indexQuestion];
+  const bonneReponse    = (q.bonne_reponse || "").trim().toUpperCase();
+  const lettreNormalisee = lettre.trim().toUpperCase();
+  const estCorrect       = (lettreNormalisee === bonneReponse);
+
+  // Bloque les boutons
+  ["A", "B", "C", "D"].forEach(l => {
+    document.getElementById("choix-" + l).disabled = true;
+  });
+
+  // Colorie
+  document.getElementById("choix-" + lettreNormalisee).classList.add(
+    estCorrect ? "correct" : "incorrect"
+  );
+  if (!estCorrect) {
+    document.getElementById("choix-" + bonneReponse).classList.add("correct");
+  }
+
+  if (estCorrect) score++;
+
+  reponsesDetaillees.push({
+    question:      q.question,
+    repondu:       lettreNormalisee,
+    bonne_reponse: bonneReponse,
+    correct:       estCorrect,
+    explication:   q.explication,
+    temps:         tempsReponse
+  });
+
+  document.getElementById("texte-explication").textContent = q.explication;
+  document.getElementById("explication").style.display = "block";
+
+  const btnSuivant = document.getElementById("btn-suivant");
+  btnSuivant.style.display = "block";
+  btnSuivant.textContent =
+    indexQuestion < questions.length - 1 ? "Question suivante →" : "Voir mes résultats →";
+}
+
+
+// ─────────────────────────────────────────────
+// ÉTAPE 4 : Question suivante
 // ─────────────────────────────────────────────
 function questionSuivante() {
   indexQuestion++;
-
   if (indexQuestion < questions.length) {
     afficherQuestion();
   } else {
-    // Quiz terminé → on sauvegarde et on redirige
     terminerQuiz();
   }
 }
 
 
 // ─────────────────────────────────────────────
-// ÉTAPE 5 : Terminer le quiz
+// ÉTAPE 5 : Terminer le quiz + score cognitif
 // ─────────────────────────────────────────────
 function terminerQuiz() {
-  // Calcul du score sur 100
-  const scoreTotal = Math.round((score / questions.length) * 100);
+  arreterTimer();
 
-  // Niveau de performance
+  const bonnesReponses = reponsesDetaillees.filter(r => r.correct).length;
+
+  // Calcul du score cognitif :
+  // 70% basé sur les bonnes réponses
+  // 30% basé sur la rapidité moyenne
+  const scorePrecision = (bonnesReponses / questions.length) * 70;
+
+  const tempsMoyen = reponsesDetaillees.reduce((acc, r) => acc + r.temps, 0)
+                     / reponsesDetaillees.length;
+  // Plus c'est rapide → plus le score de rapidité est élevé
+  const scoreRapidite = Math.max(0, (1 - tempsMoyen / DUREE_QUESTION)) * 30;
+
+  const scoreTotal = Math.round(scorePrecision + scoreRapidite);
+
   let niveau_obtenu;
   if (scoreTotal >= 85)      niveau_obtenu = "Excellent";
   else if (scoreTotal >= 65) niveau_obtenu = "Avancé";
   else if (scoreTotal >= 40) niveau_obtenu = "Moyen";
   else                       niveau_obtenu = "Débutant";
 
-  // Notions faibles = questions ratées
   const notions_faibles = reponsesDetaillees
     .filter(r => !r.correct)
-    .map(r => r.question.substring(0, 50)); // on prend les 50 premiers caractères
+    .map(r => r.question.substring(0, 60));
 
-  // On sauvegarde tout pour la page résultats
   const resultats = {
-    matiere:          matiere,
-    niveau_test:      niveau,
-    score:            scoreTotal,
-    bonnes_reponses:  score,
-    total_questions:  questions.length,
-    niveau_obtenu:    niveau_obtenu,
-    notions_faibles:  notions_faibles,
-    reponses:         reponsesDetaillees,
-    date:             new Date().toLocaleDateString("fr-FR")
+    matiere,
+    niveau_test:     niveau,
+    score:           scoreTotal,
+    bonnes_reponses: bonnesReponses,
+    total_questions: questions.length,
+    niveau_obtenu,
+    notions_faibles,
+    reponses:        reponsesDetaillees,
+    temps_moyen:     Math.round(tempsMoyen),
+    date:            new Date().toLocaleDateString("fr-FR")
   };
 
   localStorage.setItem("derniers_resultats", JSON.stringify(resultats));
 
-  // On ajoute aussi à l'historique (pour le tableau de bord)
   const historique = JSON.parse(localStorage.getItem("historique") || "[]");
   historique.push(resultats);
   localStorage.setItem("historique", JSON.stringify(historique));
 
-  // Redirection vers la page résultats
   window.location.href = "resultats.html";
 }
 
 
 // ─────────────────────────────────────────────
-// UTILITAIRE : Afficher / cacher le chargement
+// UTILITAIRE
 // ─────────────────────────────────────────────
 function afficherChargement(visible) {
   document.getElementById("zone-chargement").style.display = visible ? "flex" : "none";
   document.getElementById("zone-quiz").style.display       = visible ? "none" : "block";
 }
 
-
-// ─────────────────────────────────────────────
-// DÉMARRAGE : On charge les questions dès que
-// la page est prête
-// ─────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", chargerQuestions);

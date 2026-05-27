@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IQBOOST — Résultats</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="logo">IQ<span>BOOST</span></div>
+    <a href="matiere.html" class="nav-retour">← Nouveau test</a>
+  </nav>
+
+  <main class="page-resultats">
+
+    <!-- ─────────────────────────────────── -->
+    <!-- BLOC SCORE                          -->
+    <!-- ─────────────────────────────────── -->
+    <div class="resultats-entete">
+
+      <!-- Anneau SVG -->
+      <div class="score-anneau">
+        <svg viewBox="0 0 120 120" width="140" height="140">
+          <!-- Cercle de fond -->
+          <circle cx="60" cy="60" r="54"
+            fill="none" stroke="#e5e7eb" stroke-width="10"/>
+          <!-- Cercle de score (animé par JS) -->
+          <circle id="cercle-score" cx="60" cy="60" r="54"
+            fill="none" stroke="#6366f1" stroke-width="10"
+            stroke-linecap="round"
+            transform="rotate(-90 60 60)"
+            style="transition: stroke-dashoffset 1s ease;"/>
+        </svg>
+        <div class="score-centre">
+          <span id="score-chiffre" class="score-nombre">0</span>
+          <span class="score-sur">/100</span>
+        </div>
+      </div>
+
+      <!-- Infos à droite de l'anneau -->
+      <div class="score-infos">
+        <div id="niveau-badge" class="niveau-badge">—</div>
+        <p id="message-niveau" class="score-message"></p>
+        <p id="score-detail" class="score-detail"></p>
+        <div class="score-meta">
+          📚 <span id="info-matiere"></span>
+          &nbsp;·&nbsp;
+          📅 <span id="info-date"></span>
+        </div>
+        <div class="score-actions">
+          <button class="btn-action-principal" onclick="window.location.href='matiere.html'">
+            Refaire un test
+          </button>
+          <button class="btn-action-secondaire" onclick="window.location.href='dashboard.html'">
+            Mon tableau de bord
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ─────────────────────────────────── -->
+    <!-- PROGRAMME D'ÉTUDE (généré par Groq) -->
+    <!-- ─────────────────────────────────── -->
+    <section class="section-programme">
+      <h2 class="section-titre">📅 Programme de révision personnalisé</h2>
+      <p class="section-sous-titre">Généré par l'IA selon tes résultats</p>
+
+      <!-- Chargement -->
+      <div id="programme-chargement" style="display:flex; align-items:center; gap:1rem; padding:1.5rem 0;">
+        <div class="spinner"></div>
+        <span style="color:#6b7280;">L'IA prépare ton programme personnalisé…</span>
+      </div>
+
+      <!-- Erreur -->
+      <div id="programme-erreur" style="display:none; color:#ef4444; padding:1rem;">
+        ❌ Impossible de générer le programme. Vérifie ta connexion.
+      </div>
+
+      <!-- Programme -->
+      <div id="zone-programme" style="display:none;">
+
+        <!-- Message motivationnel -->
+        <div class="message-motivationnel-carte">
+          <div class="motivation-icone">💬</div>
+          <p id="message-motivationnel"></p>
+        </div>
+
+        <!-- Les 7 jours -->
+        <div id="liste-programme" class="liste-programme"></div>
+
+        <!-- Conseil général -->
+        <div class="conseil-carte">
+          <div class="conseil-titre">💡 Conseil général</div>
+          <p id="conseil-general"></p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────── -->
+    <!-- CORRECTIONS                         -->
+    <!-- ─────────────────────────────────── -->
+    <section class="section-corrections">
+      <h2 class="section-titre">📝 Corrections détaillées</h2>
+      <div id="liste-corrections"></div>
+    </section>
+
+  </main>
+
+  <script src="config.js"></script>
+  <script src="gemini.js"></script>
+  <script src="resultats.js"></script>
+
+</body>
+</html>
