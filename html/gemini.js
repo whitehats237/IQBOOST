@@ -11,27 +11,25 @@ async function appelGemini(prompt) {
   }
 
   try {
-    const reponse = await fetch(CONFIG.GROQ_URL, {
+    // Appel à la fonction serverless Vercel (clé API cachée côté serveur)
+    const reponse = await fetch(CONFIG.GROQ_API_ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + CONFIG.GROQ_API_KEY,
       },
       body: JSON.stringify({
+        prompt: prompt,
         model: CONFIG.GROQ_MODEL,
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.3,
-        max_tokens: 2048,
       }),
     });
 
     if (!reponse.ok) {
       const erreur = await reponse.json();
-      throw new Error("Erreur API : " + erreur.error.message);
+      throw new Error("Erreur API : " + (erreur.error || erreur.message));
     }
 
     const data = await reponse.json();
-    return data.choices[0].message.content;
+    return data.content;
 
   } catch (erreur) {
     console.error("❌ Erreur Groq :", erreur.message);
