@@ -51,6 +51,11 @@ body {
 }
 .nav-retour:hover { color: var(--texte); }
 
+/* Liens de navigation à droite */
+.nav-links { display: flex; gap: 16px; align-items: center; }
+.nav-links a { color: var(--texte2); text-decoration: none; font-size: 14px; transition: color .15s; }
+.nav-links a:hover { color: var(--texte); }
+
 /* ─── Boutons ─── */
 .btn-principal {
   width: 100%; padding: 14px; border-radius: var(--rayon-sm);
@@ -719,4 +724,350 @@ body {
   font-size: 0.82rem;
   color: #6b7280;
   line-height: 1.5;
+}
+
+/* ============================================
+   STYLES JOUR 7 — à ajouter dans style.css
+   ============================================ */
+
+/* ─── PAGE DASHBOARD ─────────────────────────── */
+.page-dashboard {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 5rem;
+  padding-top: 80px;
+}
+
+.dashboard-entete {
+  margin-bottom: 2rem;
+}
+
+.dashboard-titre {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #f4f4f4;
+  margin-bottom: 0.25rem;
+}
+
+.dashboard-sous-titre {
+  color: #9ca3af;
+  font-size: 0.95rem;
+}
+
+/* ─── KPIs ───────────────────────────────────── */
+.kpi-grille {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.kpi-carte {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.25rem;
+  text-align: center;
+  transition: box-shadow 0.2s;
+}
+
+.kpi-carte:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.kpi-icone {
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.kpi-valeur {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+.kpi-label {
+  font-size: 0.8rem;
+  color: #6d7685;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ─── GRAPHIQUES ─────────────────────────────── */
+.graphiques-grille {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.graphique-carte {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.graphique-large {
+  grid-column: 1 / -1; /* prend toute la largeur */
+}
+
+.graphique-titre {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 1rem;
+}
+
+.graphique-conteneur {
+  height: 220px;
+  position: relative;
+}
+
+/* ─── HISTORIQUE ─────────────────────────────── */
+.historique-section {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.historique-entete {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.btn-effacer {
+  font-size: 0.8rem;
+  color: #ef4444;
+  background: none;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+
+.btn-effacer:hover {
+  background: #fef2f2;
+}
+
+.historique-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f3f4f6;
+  gap: 1rem;
+}
+
+.historique-item:last-child {
+  border-bottom: none;
+}
+
+.historique-gauche {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.historique-matiere {
+  font-weight: 600;
+  color: #111827;
+  font-size: 0.95rem;
+}
+
+.historique-date {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.historique-droite {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
+  flex-shrink: 0;
+}
+
+.historique-score {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.historique-score small {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #9ca3af;
+}
+
+.historique-niveau {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ─── RESPONSIVE MOBILE ──────────────────────── */
+@media (max-width: 600px) {
+  .graphiques-grille {
+    grid-template-columns: 1fr;
+  }
+  .graphique-large {
+    grid-column: auto;
+  }
+  .kpi-grille {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ============================================
+   STYLES JOUR 8 — à ajouter dans style.css
+   ============================================ */
+
+/* ─── PAGE RAPPORT ───────────────────────────── */
+.page-rapport {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 5rem;
+}
+
+.rapport-bilan-carte {
+  display: flex;
+  gap: 1.25rem;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.rapport-bilan-icone {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.rapport-bilan-titre {
+  font-weight: 700;
+  color: #c4b5fd;
+  margin-bottom: 0.5rem;
+}
+
+.rapport-bilan-carte p {
+  color: #e8edf8;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.rapport-deux-colonnes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.rapport-colonne {
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.rapport-positif {
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.rapport-negatif {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.rapport-colonne h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: #e8edf8;
+}
+
+.rapport-colonne ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rapport-colonne li {
+  font-size: 0.875rem;
+  color: #c4cde0;
+  padding-left: 0.75rem;
+  border-left: 2px solid rgba(255,255,255,0.15);
+  line-height: 1.4;
+}
+
+/* ─── BANNIÈRE EXAMEN ────────────────────────── */
+.examen-banniere {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(139,92,246,0.2));
+  border: 1px solid rgba(99,102,241,0.3);
+  border-radius: 14px;
+  padding: 1.5rem 2rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.examen-banniere-titre {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #e8edf8;
+  margin-bottom: 0.3rem;
+}
+
+.examen-banniere-desc {
+  font-size: 0.875rem;
+  color: #8a96b5;
+}
+
+/* ─── PAGE EXAMEN ────────────────────────────── */
+.examen-regles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+  text-align: left;
+}
+
+.regle-item {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  color: #c4cde0;
+}
+
+.regle-item strong { color: #e8edf8; }
+
+.examen-badge {
+  background: rgba(245,158,11,0.15);
+  border: 1px solid rgba(245,158,11,0.3);
+  color: #fbbf24;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+@media (max-width: 600px) {
+  .rapport-deux-colonnes { grid-template-columns: 1fr; }
+  .examen-regles         { grid-template-columns: 1fr; }
+  .examen-banniere       { flex-direction: column; }
 }

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CogniTrack — Rapport hebdomadaire</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="logo">Cogni<span>Track</span></div>
+    <a href="dashboard.html" class="nav-retour">← Tableau de bord</a>
+  </nav>
+
+  <main class="page-rapport">
+
+    <div class="dashboard-entete">
+      <h1 class="dashboard-titre">📊 Rapport hebdomadaire</h1>
+      <p class="dashboard-sous-titre" id="rapport-periode">Analyse de tes 7 derniers jours</p>
+    </div>
+
+    <!-- Pas assez de données -->
+    <div id="zone-insuffisant" style="display:none; text-align:center; padding:4rem 1rem;">
+      <div style="font-size:3rem; margin-bottom:1rem;">📭</div>
+      <h2 style="color:#e8edf8; margin-bottom:0.5rem;">Pas encore assez de tests</h2>
+      <p style="color:#8a96b5; margin-bottom:1.5rem;">Effectue au moins 2 tests cette semaine pour générer un rapport.</p>
+      <button class="btn-action-principal" onclick="window.location.href='matiere.html'">
+        Faire un test maintenant
+      </button>
+    </div>
+
+    <!-- Contenu du rapport -->
+    <div id="zone-rapport">
+
+      <!-- Chargement IA -->
+      <div id="rapport-chargement" style="display:flex; align-items:center; gap:1rem; padding:2rem 0;">
+        <div class="spinner"></div>
+        <span style="color:#8a96b5;">L'IA analyse ta semaine…</span>
+      </div>
+
+      <!-- Bilan IA -->
+      <div id="zone-bilan" style="display:none;">
+
+        <!-- Résumé -->
+        <div class="rapport-bilan-carte">
+          <div class="rapport-bilan-icone">🤖</div>
+          <div>
+            <div class="rapport-bilan-titre">Analyse de la semaine</div>
+            <p id="rapport-bilan-texte"></p>
+          </div>
+        </div>
+
+        <!-- Points forts / faibles -->
+        <div class="rapport-deux-colonnes">
+          <div class="rapport-colonne rapport-positif">
+            <h3>✅ Points forts</h3>
+            <ul id="rapport-points-forts"></ul>
+          </div>
+          <div class="rapport-colonne rapport-negatif">
+            <h3>⚠️ Points à améliorer</h3>
+            <ul id="rapport-points-faibles"></ul>
+          </div>
+        </div>
+
+        <!-- Recommandation -->
+        <div class="conseil-carte" style="margin-bottom:2rem;">
+          <div class="conseil-titre">🎯 Focus semaine prochaine</div>
+          <p id="rapport-recommandation"></p>
+        </div>
+
+        <!-- Stats de la semaine -->
+        <div class="kpi-grille" style="margin-bottom:2rem;">
+          <div class="kpi-carte">
+            <div class="kpi-icone">📝</div>
+            <div class="kpi-valeur" id="stat-tests">—</div>
+            <div class="kpi-label">Tests cette semaine</div>
+          </div>
+          <div class="kpi-carte">
+            <div class="kpi-icone">🎯</div>
+            <div class="kpi-valeur" id="stat-moyenne">—</div>
+            <div class="kpi-label">Score moyen</div>
+          </div>
+          <div class="kpi-carte">
+            <div class="kpi-icone">📈</div>
+            <div class="kpi-valeur" id="stat-progression">—</div>
+            <div class="kpi-label">Progression</div>
+          </div>
+          <div class="kpi-carte">
+            <div class="kpi-icone">⭐</div>
+            <div class="kpi-valeur" id="stat-meilleur">—</div>
+            <div class="kpi-label">Meilleur score</div>
+          </div>
+        </div>
+
+        <!-- Graphique de la semaine -->
+        <div class="graphique-carte" style="margin-bottom:2rem;">
+          <h3 class="graphique-titre">📈 Scores de la semaine</h3>
+          <div class="graphique-conteneur">
+            <canvas id="graphique-semaine"></canvas>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Lien vers l'examen mensuel -->
+    <div class="examen-banniere">
+      <div>
+        <div class="examen-banniere-titre">🏆 Examen mensuel disponible</div>
+        <div class="examen-banniere-desc">20 questions difficiles sur toutes tes matières pour vérifier ta progression globale</div>
+      </div>
+      <button class="btn-action-principal" onclick="window.location.href='examen.html'">
+        Passer l'examen →
+      </button>
+    </div>
+
+  </main>
+
+  <script src="config.js"></script>
+  <script src="gemini.js"></script>
+  <script src="rapport.js"></script>
+  <script src="background.js"></script>
+</body>
+</html>

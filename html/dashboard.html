@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IQBOOST — Tableau de bord</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Chart.js — une seule ligne pour les graphiques -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <nav class="nav">
+      <div class="logo">IQ<span>BOOST</span></div>
+      <div class="nav-links">
+        <a href="matiere.html" class="nav-retour">+ Nouveau test</a>
+        <a href="rapport.html">Rapport hebdo</a>
+        <a href="examen.html">Examen mensuel</a>
+      </div>
+    
+  </nav>
+
+  <main class="page-dashboard">
+
+    <div class="dashboard-entete">
+      <h1 class="dashboard-titre">Tableau de bord</h1>
+      <p class="dashboard-sous-titre">Suis ta progression et identifie tes points forts</p>
+    </div>
+
+    <!-- ─── PAS DE DONNÉES ─────────────────── -->
+    <div id="zone-vide" style="display:none; text-align:center; padding:4rem 1rem;">
+      <div style="font-size:3rem; margin-bottom:1rem;">📊</div>
+      <h2 style="color:#374151; margin-bottom:0.5rem;">Aucun test effectué</h2>
+      <p style="color:#9ca3af; margin-bottom:1.5rem;">Passe ton premier test pour voir ta progression ici.</p>
+      <button class="btn-action-principal" onclick="window.location.href='matiere.html'">
+        Commencer un test
+      </button>
+    </div>
+
+    <!-- ─── DONNÉES DISPONIBLES ───────────── -->
+    <div id="zone-dashboard">
+
+      <!-- KPIs -->
+      <div class="kpi-grille">
+        <div class="kpi-carte">
+            <div class="kpi-label">Score moyen</div>
+          <div class="kpi-valeur" id="kpi-score-moyen">—</div>
+        </div>
+        <div class="kpi-carte">
+            <div class="kpi-label">Tests effectués</div>
+          <div class="kpi-valeur" id="kpi-total-tests">—</div>
+        </div>
+        <div class="kpi-carte">
+            <div class="kpi-label">Meilleur score</div>
+          <div class="kpi-valeur" id="kpi-meilleur-score">—</div>
+        </div>
+        <div class="kpi-carte">
+            <div class="kpi-label">Matières testées</div>
+          <div class="kpi-valeur" id="kpi-matieres">—</div>
+        </div>
+      </div>
+
+      <!-- Graphiques -->
+      <div class="graphiques-grille">
+
+        <!-- Évolution des scores -->
+        <div class="graphique-carte graphique-large">
+          <h3 class="graphique-titre">📈 Évolution des scores</h3>
+          <div class="graphique-conteneur">
+            <canvas id="graphique-evolution"></canvas>
+          </div>
+        </div>
+
+        <!-- Performance par matière -->
+        <div class="graphique-carte">
+          <h3 class="graphique-titre">📚 Score par matière</h3>
+          <div class="graphique-conteneur">
+            <canvas id="graphique-matieres"></canvas>
+          </div>
+        </div>
+
+        <!-- Répartition des niveaux -->
+        <div class="graphique-carte">
+          <h3 class="graphique-titre">🏅 Niveaux obtenus</h3>
+          <div class="graphique-conteneur">
+            <canvas id="graphique-niveaux"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Historique des tests -->
+      <div class="historique-section">
+        <div class="historique-entete">
+          <h3 class="graphique-titre">🕒 Historique des tests</h3>
+          <button class="btn-effacer" onclick="effacerHistorique()">
+            🗑 Effacer l'historique
+          </button>
+        </div>
+        <div id="liste-historique"></div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="config.js"></script>
+  <script src="dashboard.js"></script>
+
+</body>
+</html>

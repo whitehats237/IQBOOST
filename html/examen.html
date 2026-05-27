@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CogniTrack — Examen mensuel</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="logo">Cogni<span>Track</span></div>
+    <a href="dashboard.html" class="nav-retour">← Tableau de bord</a>
+  </nav>
+
+  <!-- ÉCRAN D'INTRO (avant de commencer) -->
+  <div id="zone-intro">
+    <main style="max-width:600px; margin:4rem auto; padding:0 1.5rem; text-align:center;">
+      <div style="font-size:3.5rem; margin-bottom:1rem;">🏆</div>
+      <h1 style="font-size:1.75rem; font-weight:800; color:#e8edf8; margin-bottom:0.75rem;">
+        Examen mensuel
+      </h1>
+      <p style="color:#8a96b5; margin-bottom:2rem; line-height:1.6;">
+        20 questions de difficulté élevée sur toutes tes matières.
+        Cet examen vérifie si tu as vraiment retenu ce que tu as étudié.
+      </p>
+
+      <div class="examen-regles">
+        <div class="regle-item">⏱ <strong>20 secondes</strong> par question</div>
+        <div class="regle-item">🎯 <strong>20 questions</strong> difficiles</div>
+        <div class="regle-item">📚 <strong>Toutes les matières</strong> mélangées</div>
+        <div class="regle-item">🔒 <strong>Pas de retour</strong> en arrière</div>
+      </div>
+
+      <button class="btn-action-principal" style="width:100%; padding:1rem; font-size:1.1rem; margin-top:1.5rem;"
+        onclick="demarrerExamen()">
+        Commencer l'examen →
+      </button>
+      <p style="color:#8a96b5; font-size:0.85rem; margin-top:1rem;">
+        Assure-toi d'avoir quelques minutes devant toi.
+      </p>
+    </main>
+  </div>
+
+  <!-- ÉCRAN DE CHARGEMENT -->
+  <div id="zone-chargement-examen" style="display:none; flex-direction:column; align-items:center; justify-content:center; min-height:60vh; gap:1.5rem;">
+    <div class="spinner"></div>
+    <p class="texte-chargement">L'IA prépare ton examen personnalisé…</p>
+    <p class="texte-chargement-sub">20 questions sur toutes tes matières</p>
+  </div>
+
+  <!-- ÉCRAN DU QUIZ (même structure que quiz.html) -->
+  <div id="zone-quiz-examen" style="display:none;">
+
+    <div class="barre-progression-conteneur">
+      <div class="barre-progression" id="barre-progression-examen" style="width:0%"></div>
+    </div>
+
+    <main class="page-quiz">
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <div class="quiz-compteur" id="compteur-examen">Question 1 / 20</div>
+        <div class="examen-badge">🏆 Examen mensuel</div>
+      </div>
+
+      <div class="timer-conteneur">
+        <span id="timer-texte-examen">20s</span>
+        <div class="timer-barre-fond">
+          <div id="timer-barre-examen"></div>
+        </div>
+      </div>
+
+      <div class="quiz-question" id="texte-question-examen"></div>
+
+      <div class="quiz-choix">
+        <button class="btn-choix" id="ex-choix-A" onclick="choisirReponseExamen('A')">A. </button>
+        <button class="btn-choix" id="ex-choix-B" onclick="choisirReponseExamen('B')">B. </button>
+        <button class="btn-choix" id="ex-choix-C" onclick="choisirReponseExamen('C')">C. </button>
+        <button class="btn-choix" id="ex-choix-D" onclick="choisirReponseExamen('D')">D. </button>
+      </div>
+
+      <div class="quiz-explication" id="explication-examen" style="display:none;">
+        <div class="explication-titre">💡 Explication</div>
+        <p id="texte-explication-examen"></p>
+      </div>
+
+      <button class="btn-suivant" id="btn-suivant-examen" onclick="questionSuivanteExamen()" style="display:none;">
+        Question suivante →
+      </button>
+
+    </main>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="gemini.js"></script>
+  <script src="examen.js"></script>
+  <script src="background.js"></script>
+</body>
+</html>
