@@ -1,35 +1,68 @@
 // ============================================
-// groq.js — Connexion à l'API Groq (Llama 3)
+// gemini.js — Connexion à l'API Groq (Llama 3)
 // ============================================
 
 // ─────────────────────────────────────────────
 // FONCTION PRINCIPALE : Envoyer un message à Groq
 // ─────────────────────────────────────────────
 async function appelGemini(prompt) {
-   if (!prompt || prompt.trim() === "") {
+  if (!prompt || prompt.trim() === "") {
     throw new Error("Le prompt est vide — vérifie que matiere et niveau sont bien dans localStorage");
   }
 
+  // Détection : est-on en local ou sur Vercel ?
+  const estLocal = window.location.hostname === "localhost" ||
+                   window.location.hostname === "127.0.0.1" ||
+                   window.location.protocol === "file:";
+
   try {
-    // Appel à la fonction serverless Vercel (clé API cachée côté serveur)
-    const reponse = await fetch(CONFIG.GROQ_API_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        prompt: prompt,
-        model: CONFIG.GROQ_MODEL,
-      }),
-    });
+    let reponse;
 
-    if (!reponse.ok) {
-      const erreur = await reponse.json();
-      throw new Error("Erreur API : " + (erreur.error || erreur.message));
+    if (estLocal) {
+      // ── MODE LOCAL : appel direct à Groq avec la clé API ──
+      reponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + CONFIG.GROQ_API_KEY,
+        },
+        body: JSON.stringify({
+          model: CONFIG.GROQ_MODEL,
+          messages: [{ role: "user", content: prompt }],
+          temperature: 0.3,
+          max_tokens: 4096,
+        }),
+      });
+
+      if (!reponse.ok) {
+        const erreur = await reponse.json();
+        throw new Error("Erreur API : " + erreur.error?.message);
+      }
+
+      const data = await reponse.json();
+      return data.choices[0].message.content;
+
+    } else {
+      // ── MODE VERCEL : appel via la fonction serverless /api/groq ──
+      reponse = await fetch("/api/groq", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: prompt,
+          model: CONFIG.GROQ_MODEL,
+        }),
+      });
+
+      if (!reponse.ok) {
+        const erreur = await reponse.json();
+        throw new Error("Erreur API : " + (erreur.error || erreur.message));
+      }
+
+      const data = await reponse.json();
+      return data.content;
     }
-
-    const data = await reponse.json();
-    return data.content;
 
   } catch (erreur) {
     console.error("❌ Erreur Groq :", erreur.message);
@@ -42,8 +75,7 @@ async function appelGemini(prompt) {
 // FONCTION : Générer des questions pour un quiz
 // ─────────────────────────────────────────────
 async function genererQuestions(matiere, niveau, nombre = CONFIG.NB_QUESTIONS) {
-  
-  // LE VRAI PROMPT
+
   const prompt = `
 Tu es un professeur expert en ${matiere}.
 Génère exactement ${nombre} questions QCM pour un étudiant de niveau ${niveau}.
@@ -93,6 +125,8 @@ Nombre de questions : ${nombre}
     };
   });
 }
+
+
 // ─────────────────────────────────────────────
 // FONCTION : Générer un programme d'étude
 // ─────────────────────────────────────────────
@@ -128,12 +162,7 @@ FORMAT EXACT :
 `;
 
   const texte = await appelGemini(prompt);
-
-  const texteNettoye = texte
-    .replace(/```json/g, "")
-    .replace(/```/g, "")
-    .trim();
-
+  const texteNettoye = texte.replace(/```json/g, "").replace(/```/g, "").trim();
   return JSON.parse(texteNettoye);
 }
 
@@ -165,11 +194,6 @@ FORMAT EXACT :
 `;
 
   const texte = await appelGemini(prompt);
-
-  const texteNettoye = texte
-    .replace(/```json/g, "")
-    .replace(/```/g, "")
-    .trim();
-
+  const texteNettoye = texte.replace(/```json/g, "").replace(/```/g, "").trim();
   return JSON.parse(texteNettoye);
 }
