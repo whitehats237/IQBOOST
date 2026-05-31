@@ -75,21 +75,28 @@ async function appelGemini(prompt) {
 // FONCTION : Générer des questions pour un quiz
 // ─────────────────────────────────────────────
 async function genererQuestions(matiere, niveau, nombre = CONFIG.NB_QUESTIONS) {
-
   const prompt = `
-Tu es un professeur expert en ${matiere}.
-Génère exactement ${nombre} questions QCM pour un étudiant de niveau ${niveau}.
+Tu es un expert en tests cognitifs et psychométrie.
+Génère exactement ${nombre} questions de type QI adaptées à la matière "${matiere}" pour un niveau ${niveau}.
 
-RÈGLES IMPORTANTES :
+Les questions doivent tester :
+- Le raisonnement logique et déductif
+- La reconnaissance de patterns et séquences
+- Les analogies et relations entre concepts
+- La résolution de problèmes abstraits
+- La mémoire de travail appliquée à ${matiere}
+
+RÈGLES :
 - Réponds UNIQUEMENT avec du JSON valide, rien d'autre
-- Pas de texte avant, pas de texte après
-- Pas de balises markdown, pas de \`\`\`json
-- Juste le tableau JSON directement
+- Questions progressives : les 3 premières faciles, les 4 suivantes moyennes, les 3 dernières difficiles
+- Chaque question doit avoir exactement une seule bonne réponse logique
 
-FORMAT EXACT à respecter :
+FORMAT EXACT :
 [
   {
     "question": "Texte de la question ?",
+    "type": "logique",
+    "difficulte": 1,
     "choix": {
       "A": "Premier choix",
       "B": "Deuxième choix",
@@ -97,13 +104,13 @@ FORMAT EXACT à respecter :
       "D": "Quatrième choix"
     },
     "bonne_reponse": "B",
-    "explication": "Courte explication pourquoi c'est B"
+    "explication": "Explication du raisonnement"
   }
 ]
 
 Matière : ${matiere}
 Niveau : ${niveau}
-Nombre de questions : ${nombre}
+Nombre : ${nombre}
 `;
 
   const texte = await appelGemini(prompt);
@@ -112,16 +119,12 @@ Nombre de questions : ${nombre}
 
   return questions.map(q => {
     const choixNormalise = {};
-    for (const cle in q.choix) {
-      choixNormalise[cle.toUpperCase()] = q.choix[cle];
-    }
-    let bonne = q.bonne_reponse || "";
-    bonne = bonne.trim().toUpperCase().charAt(0);
+    for (const cle in q.choix) choixNormalise[cle.toUpperCase()] = q.choix[cle];
     return {
-      question:      q.question,
+      ...q,
       choix:         choixNormalise,
-      bonne_reponse: bonne,
-      explication:   q.explication || ""
+      bonne_reponse: (q.bonne_reponse || "").trim().toUpperCase().charAt(0),
+      difficulte:    q.difficulte || 1
     };
   });
 }

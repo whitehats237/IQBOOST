@@ -28,43 +28,43 @@ document.addEventListener("DOMContentLoaded", async () => {
 // AFFICHER LE SCORE ET LE NIVEAU
 // ─────────────────────────────────────────────
 function afficherScore(r) {
-  // Score en chiffre
-  document.getElementById("score-chiffre").textContent = r.score;
+  // Affiche l'IQ estimé au lieu du simple score
+  document.getElementById("score-chiffre").textContent = r.iq_estime || r.score;
   document.getElementById("score-detail").textContent =
-    `${r.bonnes_reponses} / ${r.total_questions} bonnes réponses · Temps moyen : ${r.temps_moyen}s`;
+    `${r.bonnes_reponses}/${r.total_questions} correctes · ${r.label_iq || ""} · Temps moyen : ${r.temps_moyen}s`;
 
-  // Niveau badge
   const badge = document.getElementById("niveau-badge");
   badge.textContent = r.niveau_obtenu;
-  badge.className = "niveau-badge niveau-" + r.niveau_obtenu.toLowerCase();
+  badge.className   = "niveau-badge niveau-" + r.niveau_obtenu.toLowerCase();
 
-  // Message selon le niveau
+  // Message selon l'IQ
   const messages = {
-    "Excellent": "🏆 Performance exceptionnelle ! Tu maîtrises très bien cette matière.",
-    "Avancé":    "🎯 Très bon résultat ! Quelques points à peaufiner.",
-    "Moyen":     "📈 Bon début ! Un peu de travail et tu progresseras vite.",
-    "Débutant":  "💪 Ne te décourage pas, tout le monde commence quelque part !"
+    "Excellent": `🧠 Indice cognitif exceptionnel (${r.iq_estime}) ! Tu figures parmi les meilleurs.`,
+    "Avancé":    `🎯 Très bon indice cognitif (${r.iq_estime}). Au-dessus de la moyenne.`,
+    "Moyen":     `📈 Indice cognitif dans la norme (${r.iq_estime}). De la progression est possible.`,
+    "Débutant":  `💪 Indice cognitif de ${r.iq_estime}. Continue à t'entraîner, ça progresse !`
   };
-  document.getElementById("message-niveau").textContent =
-    messages[r.niveau_obtenu] || "";
+  document.getElementById("message-niveau").textContent = messages[r.niveau_obtenu] || "";
 
-  // Matière et date
   document.getElementById("info-matiere").textContent = r.matiere;
   document.getElementById("info-date").textContent    = r.date;
 
-  // Anneau de score (SVG circulaire)
+  // Anneau — couleur selon l'IQ
   const cercle = document.getElementById("cercle-score");
   if (cercle) {
-    const circonference = 2 * Math.PI * 54; // rayon = 54
-    const rempli = ((100 - r.score) / 100) * circonference;
-    cercle.style.strokeDasharray  = circonference;
-    cercle.style.strokeDashoffset = rempli;
-    // Couleur selon le score
-    if      (r.score >= 85) cercle.style.stroke = "#22c55e";
-    else if (r.score >= 65) cercle.style.stroke = "#6366f1";
-    else if (r.score >= 40) cercle.style.stroke = "#f59e0b";
-    else                    cercle.style.stroke = "#ef4444";
+    const pct = Math.min((r.iq_estime - 70) / 75, 1); // 70–145 → 0–1
+    const circonf = 2 * Math.PI * 54;
+    cercle.style.strokeDasharray  = circonf;
+    cercle.style.strokeDashoffset = circonf * (1 - pct);
+    cercle.style.stroke =
+      r.iq_estime >= 130 ? "#22c55e" :
+      r.iq_estime >= 115 ? "#6366f1" :
+      r.iq_estime >= 85  ? "#f59e0b" : "#ef4444";
   }
+
+  // ── Remplace "/100" par "IQ" sous le chiffre ──
+  const scoreSur = document.querySelector(".score-sur");
+  if (scoreSur) scoreSur.textContent = "IQ";
 }
 
 

@@ -216,25 +216,44 @@ function questionSuivante() {
 function terminerQuiz() {
   arreterTimer();
 
-  const bonnesReponses = reponsesDetaillees.filter(r => r.correct).length;
+  // ── Calcul de l'indice cognitif ──────────────
+  // Chaque question a un poids selon sa difficulté
+  let pointsObtenus = 0;
+  let pointsMax     = 0;
 
-  // Calcul du score cognitif :
-  // 70% basé sur les bonnes réponses
-  // 30% basé sur la rapidité moyenne
-  const scorePrecision = (bonnesReponses / questions.length) * 70;
+  reponsesDetaillees.forEach(r => {
+    const poids = r.difficulte || 1; // 1=facile, 2=moyen, 3=difficile
+    pointsMax    += poids * 10;
+    if (r.correct) {
+      // Bonus si réponse rapide (moins de 10s)
+      const bonusVitesse = r.temps <= 10 ? poids * 2 : 0;
+      pointsObtenus += poids * 10 + bonusVitesse;
+    }
+  });
 
-  const tempsMoyen = reponsesDetaillees.reduce((acc, r) => acc + r.temps, 0)
-                     / reponsesDetaillees.length;
-  // Plus c'est rapide → plus le score de rapidité est élevé
-  const scoreRapidite = Math.max(0, (1 - tempsMoyen / DUREE_QUESTION)) * 30;
+  const scoreBrut = pointsObtenus / pointsMax; // 0 à 1
 
-  const scoreTotal = Math.round(scorePrecision + scoreRapidite);
+  // Conversion en indice IQ (70–145)
+  // Distribution normale centrée sur 100
+  const iqEstime = Math.round(70 + scoreBrut * 75);
 
+  // Niveau verbal
   let niveau_obtenu;
-  if (scoreTotal >= 85)      niveau_obtenu = "Excellent";
-  else if (scoreTotal >= 65) niveau_obtenu = "Avancé";
-  else if (scoreTotal >= 40) niveau_obtenu = "Moyen";
-  else                       niveau_obtenu = "Débutant";
+  if      (iqEstime >= 130) niveau_obtenu = "Excellent";
+  else if (iqEstime >= 115) niveau_obtenu = "Avancé";
+  else if (iqEstime >= 85)  niveau_obtenu = "Moyen";
+  else                      niveau_obtenu = "Débutant";
+
+  // Label IQ plus précis
+  let label_iq;
+  if      (iqEstime >= 130) label_iq = "Supérieur";
+  else if (iqEstime >= 120) label_iq = "Très élevé";
+  else if (iqEstime >= 110) label_iq = "Au-dessus de la moyenne";
+  else if (iqEstime >= 90)  label_iq = "Dans la moyenne";
+  else if (iqEstime >= 80)  label_iq = "En dessous de la moyenne";
+  else                      label_iq = "À renforcer";
+
+  const scoreTotal = Math.round(scoreBrut * 100);
 
   const notions_faibles = reponsesDetaillees
     .filter(r => !r.correct)
@@ -244,24 +263,26 @@ function terminerQuiz() {
     matiere,
     niveau_test:     niveau,
     score:           scoreTotal,
-    bonnes_reponses: bonnesReponses,
+    iq_estime:       iqEstime,
+    label_iq,
+    bonnes_reponses: reponsesDetaillees.filter(r => r.correct).length,
     total_questions: questions.length,
     niveau_obtenu,
     notions_faibles,
     reponses:        reponsesDetaillees,
-    temps_moyen:     Math.round(tempsMoyen),
-    date:            new Date().toLocaleDateString("fr-FR")
+    temps_moyen:     Math.round(
+      reponsesDetaillees.reduce((a, r) => a + r.temps, 0) / reponsesDetaillees.length
+    ),
+    date: new Date().toLocaleDateString("fr-FR")
   };
 
   localStorage.setItem("derniers_resultats", JSON.stringify(resultats));
-
   const historique = JSON.parse(localStorage.getItem("historique") || "[]");
   historique.push(resultats);
   localStorage.setItem("historique", JSON.stringify(historique));
 
   window.location.href = "resultats.html";
 }
-
 
 // ─────────────────────────────────────────────
 // UTILITAIRE
